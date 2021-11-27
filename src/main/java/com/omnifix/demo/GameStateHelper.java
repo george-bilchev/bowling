@@ -1,8 +1,10 @@
 package com.omnifix.demo;
 
 import lombok.extern.slf4j.Slf4j;
+import net.jcip.annotations.NotThreadSafe;
 
 @Slf4j
+@NotThreadSafe
 public abstract class GameStateHelper implements Bowling {
 
   /*
@@ -13,6 +15,7 @@ public abstract class GameStateHelper implements Bowling {
     return getScore();
   }
 
+  
   public void roll(int noOfPins) {
 
     String currentStateStr = GameStateMachine.getStateStr(this);
