@@ -14,7 +14,13 @@ public interface Bowling {
 }
 ```
 
-Proposed solution consists of three phases (timings given are a personal view):
+### To run the tests: 
+
+```
+mvn clean test
+```
+
+## Proposed solution approach (timings given are a personal view):
 
 * Analysis and modelling
 * Implementation
@@ -37,7 +43,7 @@ public class GameState {
 }
 ```
 
-Score is to hold the accumulative score so far, next frame and next roll are references that uniquely define where in the game sequence will the next move be at, spare bonus and strike bonus are flags that contain information about any bonus rules to be applied and the previous roll value (e.g. number of pins scored during previous go) is used to determine if we have a two goes SPARE (for example 3 pins in go one and 7 pins in go two).
+Score is to hold the accumulative score so far, next frame and next roll are references that uniquely define where in the game sequence will the next move be at, spare bonus and strike bonus are flags that contain information about any bonus rules to be applied and the previous roll value (e.g., number of pins scored during previous go) is used to determine if we have a two rolls SPARE (for example 3 pins in go one and 7 pins in go two).
 
 ## Implementation (60-90 minutes)
 
@@ -48,7 +54,7 @@ Initial implementation of the game state helper class included imperative logic 
 
 At this stage tests were written to capture a comprehensive set of game scenarios including ending the game with STRIKE and SPARE. The observability of the game state model allows for a strict set of assertions while not having to rely on mocking. 
 
-## Technical Debt Resolution and Code Optimisation
+## Technical Debt Resolution and Code Optimisation (60-90 minutes)
 
 The textual algorithm description and the literal code implementation in the previous step doesn't provide a good visualisation of the state machine and time sequence. Extracting the logic into a state machine pattern would greatly improve readability and maintainability of the code. To achieve that first we need to explicitly define the state machine model which our implementation follows. Below is the PlantUML of a state machine for our algorithm. Note how we have decided to map reduce our game state into only three discrete machine states.  
 
@@ -74,12 +80,12 @@ BONUS_GO  --> [*] : [Round 10, roll 3 after STRIKE or SPARE]
 ```
 ![Bowling game scoring state machine](state-machine.svg "State Machine")
 
-There were no non-functional specifications in the task description so no code optimisation was considered. The implementation is not thread safe and mark accordingly.
+There were no non-functional specifications in the task description so no code optimisation was considered. The implementation is not thread safe and marked accordingly.
 
 ## Conclusions
 
-Some people will say why not avoid any technical debt and resolve it all in one go at the implementation phase. The reason is that more often than not while going through the motions of implementing a specific design some Eureka moments can lead to ideas to improve it. The more complex the subject matter the more opportunities for improvements and optimisation might present themselves. Denying the chance to continuously improve the design/implementation by registering and resolving technical debt can easily accumulate and lead to code explosion and lack of maintainability.
+Some people might say why not avoid any technical debt and resolve it all in one go at the implementation phase. The reason is that more often than not while going through the motions of implementing a specific design some Eureka moments can lead to ideas to improve it. The more complex the subject matter the more opportunities for improvements and optimisation might present themselves. Denying the chance to continuously improve the design and implementation by registering and resolving the technical debt, it can easily accumulate and lead to "code explosion" and lack of maintainability.
 
 Others might ask why do we need rapid prototyping in phase one? While the rapid prototyping is a personal choice, "war gaming" various modelling approaches quite often is the most significant factor that pre-determines the complexity of the implementation. Rapid prototyping is a tool to gain a glimpse of the ensuing code complexity given certain design decisions.
 
-When is the right moment to write the tests? There are those who insist to write test first and do coding later in a single phase, however, in practice this is only possible for well defined small tasks with little or no element of creativity. The right moment to write the tests in the above three phase approach is the second phase. If we write the tests too early (phase one) we will hamper the rapid prototyping as it will invariably involve refactoring the tests from one model to another. In this phase one way to interact with the model could be via some sort of interactive shell (like spring boot shell or similar) or simply logging. If we do the test too late (e.g., phase three) we risk introducing regression bugs especially as the last phase involves some form of refractoring. 
+When is the right moment to write the tests? There are those who insist to write test first and do coding later in a single phase, however, in practice this is only possible for well defined small tasks with little or no element of creativity. The right moment to write the tests in the above three phase approach is the second phase. If we write the tests too early (phase one) we will hamper the rapid prototyping as it will invariably involve refactoring the tests while switching from one model to another. In this phase one way to interact with the model could be via some sort of interactive shell (like spring boot shell). If we do the test too late (e.g., phase three) we risk introducing regression bugs especially as the last phase involves some form of refractoring. 
