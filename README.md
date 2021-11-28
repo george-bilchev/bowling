@@ -50,7 +50,7 @@ Score is to hold the accumulative score so far, next frame and next roll are ref
 A decision has been taken to keep the game state model declarative (which always improves readability) and keep the code separate in a helper class. The actual helper pattern used ended up being inheritance (an abstract parent class `GameStateHelper.java`) rather than an interface with default methods mainly due to state model data access encapsulation. The game state model setters are set to `@Setter(AccessLevel.PROTECTED)` while to maintain observability the getters are left public.
 
 Initial implementation of the game state helper class included imperative logic closely following the textual description of the bowling scoring rules similar to the ones found here: 
-[Bowling scoring rules description](https://www.topendsports.com/sport/tenpin/scoring.htm)
+[Bowling scoring rules description](https://www.topendsports.com/sport/tenpin/scoring.htm). The task description didn't include any information about the score output representation (e.g., no "X" and "/" were described as required).
 
 At this stage tests were written to capture a comprehensive set of game scenarios including ending the game with STRIKE and SPARE. The observability of the game state model allows for a strict set of assertions while not having to rely on mocking. 
 
