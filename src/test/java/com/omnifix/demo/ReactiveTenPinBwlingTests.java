@@ -1,6 +1,7 @@
 package com.omnifix.demo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,7 +37,7 @@ class ReactiveTenPinBwlingTests {
   @AfterEach
   void tearDown() throws Exception {}
 
-  // @Test
+  @Test
   void canRecordOneRound(TestInfo testInfo) {
 
     int firstRoll = 5;
@@ -55,6 +57,20 @@ class ReactiveTenPinBwlingTests {
 
     assertThat(reactiveBowling.play(pinsStream).collect(Collectors.toList()).block())
         .containsExactly(5, 8); // Expected score sequence
+  }
+
+  @Test
+  void cannotExceedTotalGameFrames() {
+
+    Flux<Integer> pinsStream =
+        Flux.fromIterable(List.of(10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 2, 3));
+
+    assertThatThrownBy(
+            () -> {
+              reactiveBowling.play(pinsStream).blockLast();
+            })
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("End of game!");
   }
 
   @ParameterizedTest(name = "{0}")
