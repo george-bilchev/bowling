@@ -13,9 +13,14 @@ public enum GameStateMachine {
       recordScoreAndBonus(noOfPins, stateProxy);
       if (noOfPins == ALL_PINS) {
         log.debug("Detected a STRIKE: {}", this);
+        // Check for double STRIKE
+        if (isStrikeBonus(stateProxy)) {
+          stateProxy.setDoubleStrike(true);
+        }
         stateProxy.setStrikeBonus(STRIKE_BONUS_ROLLS_TWO);
         advanceToNextFrame(noOfPins, stateProxy);
       } else {
+        stateProxy.setDoubleStrike(false); // Can't be double strike if we are here
         stateProxy.setNextRoll(stateProxy.getNextRoll() + 1);
         stateProxy.setPrevRollValue(noOfPins);
       }
@@ -25,6 +30,7 @@ public enum GameStateMachine {
   SECOND_GO {
     @Override
     public String nextState(int noOfPins, GameStateHelper stateProxy) {
+      stateProxy.setDoubleStrike(false); // Can't be double strike if we are here
       recordScoreAndBonus(noOfPins, stateProxy);
       if (noOfPins == BowlingConstants.ALL_PINS) { // SPARE from second go only
         stateProxy.setSpareBonus(true);
@@ -48,6 +54,9 @@ public enum GameStateMachine {
       if (isStrikeBonus(stateProxy)) {
         stateProxy.setNextRoll(stateProxy.getNextRoll() + 1);
         stateProxy.setPrevRollValue(noOfPins);
+      } else if (stateProxy.isSpareBonus()) {
+        // Cannot go to BONUS_GO more than once if SPARE
+        stateProxy.setNextRoll(3); // This is END OF GAME!
       }
       return getStateStr(stateProxy);
     }
@@ -70,10 +79,12 @@ public enum GameStateMachine {
    */
   public static GameStateMachine calculateState(GameStateHelper stateProxy) {
     if (stateProxy.getNextFrame() > BowlingConstants.LAST_FRAME + 1) {
-      throw new IllegalStateException("Game has finished! " + stateProxy);
+      return END_OF_GAME;
+      // throw new IllegalStateException("Game has finished! " + stateProxy);
     } else if (stateProxy.getNextFrame()
         == BowlingConstants.LAST_FRAME + 1) { // +1 models the bonus frame
-      if (stateProxy.isSpareBonus() || isStrikeBonus(stateProxy)) {
+      if ((stateProxy.isSpareBonus() || isStrikeBonus(stateProxy))
+          && (stateProxy.getNextRoll() <= 2)) {
         return BONUS_GO;
       } else {
         return END_OF_GAME;
@@ -121,15 +132,27 @@ public enum GameStateMachine {
   private static void recordScoreAndBonus(int noOfPins, GameStateHelper stateProxy) {
     stateProxy.setScore(stateProxy.getScore() + noOfPins);
 
-    // Apply Bonus from previous round
-    if (stateProxy.isSpareBonus()) {
-      stateProxy.setScore(stateProxy.getScore() + noOfPins); // Apply SPARE bonus
-      stateProxy.setSpareBonus(false); // Clear SPARE bonus
+    if ((stateProxy.isDoubleStrike()) && (!isLastBonusGo(stateProxy))) {
+      stateProxy.setScore(stateProxy.getScore() + noOfPins);
     }
 
-    if (isStrikeBonus(stateProxy)) {
-      stateProxy.setScore(stateProxy.getScore() + noOfPins); // Apply STRIKE bonus
-      stateProxy.setStrikeBonus(stateProxy.getStrikeBonus() - 1); // Decrement STRIKE bonus count
+    // Bonus frames logic is different
+    if (!calculateState(stateProxy).equals(GameStateMachine.BONUS_GO)) {
+      // Apply Bonus from previous round
+      if (stateProxy.isSpareBonus()) {
+        stateProxy.setScore(stateProxy.getScore() + noOfPins); // Apply SPARE bonus
+        stateProxy.setSpareBonus(false); // Clear SPARE bonus
+      }
+
+      if (isStrikeBonus(stateProxy)) {
+        stateProxy.setScore(stateProxy.getScore() + noOfPins); // Apply STRIKE bonus
+        stateProxy.setStrikeBonus(stateProxy.getStrikeBonus() - 1); // Decrement STRIKE bonus count
+      }
     }
+  }
+
+  private static boolean isLastBonusGo(GameStateHelper stateProxy) {
+    return calculateState(stateProxy).equals(GameStateMachine.BONUS_GO)
+        && stateProxy.getNextRoll() == 2;
   }
 }

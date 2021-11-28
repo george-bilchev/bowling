@@ -39,4 +39,8 @@ public class GameState extends GameStateHelper {
   @Setter(AccessLevel.PROTECTED)
   @Builder.Default
   private int prevRollValue = 0;
+
+  @Setter(AccessLevel.PROTECTED)
+  @Builder.Default
+  private boolean doubleStrike = false;
 }

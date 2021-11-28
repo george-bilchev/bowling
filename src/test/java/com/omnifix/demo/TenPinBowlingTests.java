@@ -41,7 +41,7 @@ class TenPinBowlingTests {
   void tearDown() throws Exception {}
 
   @Test
-  void catRecordOneRound() {
+  void canRecordOneRound() {
     GameState game = GameState.builder().build();
 
     int firstRoll = 5;
@@ -173,8 +173,7 @@ class TenPinBowlingTests {
     assertThat(GameStateMachine.calculateState(game)).isEqualTo(GameStateMachine.END_OF_GAME);
 
     Assertions.assertThat(game.score())
-        .isEqualTo(
-            score + lastRoundRollOne + lastRoundRollTwo + lastRoundRollThree + lastRoundRollThree);
+        .isEqualTo(score + lastRoundRollOne + lastRoundRollTwo + lastRoundRollThree);
   }
 
   @Test
@@ -200,8 +199,7 @@ class TenPinBowlingTests {
     assertThat(GameStateMachine.calculateState(game)).isEqualTo(GameStateMachine.END_OF_GAME);
 
     Assertions.assertThat(game.score())
-        .isEqualTo(
-            score + lastRoundRollOne + lastRoundRollTwo + lastRoundRollThree + lastRoundRollThree);
+        .isEqualTo(score + lastRoundRollOne + lastRoundRollTwo + lastRoundRollThree);
 
     // assertEndOfGame(game);
     Assertions.assertThat(GameStateMachine.calculateState(game))
@@ -221,7 +219,7 @@ class TenPinBowlingTests {
 
     int lastRoundRollOne = 10;
     int lastRoundRollTwo = 8;
-    int lastRoundRollThree = 7;
+    int lastRoundRollThree = 1;
 
     game.roll(lastRoundRollOne);
     assertThat(GameStateMachine.calculateState(game)).isEqualTo(GameStateMachine.BONUS_GO);
@@ -231,13 +229,7 @@ class TenPinBowlingTests {
     assertThat(GameStateMachine.calculateState(game)).isEqualTo(GameStateMachine.END_OF_GAME);
 
     Assertions.assertThat(game.score())
-        .isEqualTo(
-            score
-                + lastRoundRollOne
-                + lastRoundRollTwo
-                + lastRoundRollTwo
-                + lastRoundRollThree
-                + lastRoundRollThree);
+        .isEqualTo(score + lastRoundRollOne + lastRoundRollTwo + lastRoundRollThree);
 
     // assertEndOfGame(game);
     Assertions.assertThat(GameStateMachine.calculateState(game))
@@ -285,7 +277,7 @@ class TenPinBowlingTests {
     game.roll(fifthRoll);
 
     Assertions.assertThat(game.score())
-        .isEqualTo(firstRoll + thirdRoll + thirdRoll + fifthRoll + fifthRoll);
+        .isEqualTo(firstRoll + thirdRoll + thirdRoll + fifthRoll + fifthRoll + fifthRoll);
 
     assertStateAdvance(game, THIRD_FRAME, SECOND_ROLL);
     assertThat(GameStateMachine.calculateState(game)).isEqualTo(GameStateMachine.SECOND_GO);

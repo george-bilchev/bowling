@@ -15,7 +15,6 @@ public abstract class GameStateHelper implements Bowling {
     return getScore();
   }
 
-  
   public void roll(int noOfPins) {
 
     String currentStateStr = GameStateMachine.getStateStr(this);
@@ -79,6 +78,10 @@ public abstract class GameStateHelper implements Bowling {
   public abstract int getStrikeBonus();
 
   protected abstract void setStrikeBonus(int value);
+
+  public abstract boolean isDoubleStrike();
+
+  protected abstract void setDoubleStrike(boolean value);
 
   public abstract String toString();
 }
