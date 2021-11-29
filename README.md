@@ -19,6 +19,8 @@ public interface Bowling {
 ```
 mvn clean test
 ```
+#### UPDATE [28/11/2021]: Check the reactive update at the bottom
+
 
 ## Proposed solution approach (timings given are a personal view):
 
@@ -89,3 +91,50 @@ Some people might say why not avoid any technical debt and resolve it all in one
 Others might ask why do we need rapid prototyping in phase one? While the rapid prototyping is a personal choice, "war gaming" various modelling approaches quite often is the most significant factor that pre-determines the complexity of the implementation. Rapid prototyping is a tool to gain a glimpse of the ensuing code complexity given certain design decisions.
 
 When is the right moment to write the tests? There are those who insist to write test first and do coding later in a single phase, however, in practice this is only possible for well defined small tasks with little or no element of creativity. The right moment to write the tests in the above three phase approach is the second phase. If we write the tests too early (phase one) we will hamper the rapid prototyping as it will invariably involve refactoring the tests while switching from one model to another. In this phase one way to interact with the model could be via some sort of interactive shell (like spring boot shell). If we do the test too late (e.g., phase three) we risk introducing regression bugs especially as the last phase involves some form of refractoring. 
+
+## UPDATE
+
+#### Reactive Bowling
+
+I have wrapped the original implementation in reactive code as a demonstration - check out `ReactiveBowling.java`. As only `GameStateHelper.java` is wrapped and the state machine is left the intact, both implementations are essentially equivalent. 
+
+#### Functional Reactive Bowling
+
+To truly understand the potential of reactive functional programming one has to start the problem solution with a reactive mind set. I have attempted to do just that and started from scratch on a "blank sheet of paper" - check out `FunctionalReactiveBowling.java`. This by far is the cleanest algorithm of the bunch in my personal view. It has brought a great level of clarity to the algorithm - for example compare the state machine transition code from the original approach (`GameStateMachine.java`) with the equivalent reactor code:
+
+```
+                           .map(
+                                gameState ->
+                                    gameState
+                                        .mapT1(
+                                            updateScore(noOfPins, gameState)) // T1 holds the score
+                                        .mapT4(
+                                            updateNextMultiplierIfStrikeOrSpare(
+                                                noOfPins, gameState)) // T4 hold the next multiplier
+                                        .mapT5(
+                                            updateNextNextMultiplierIfStrike(
+                                                noOfPins,
+                                                gameState)) // T5 holds the next next multiplier
+                                        .mapT6(
+                                            storePrevRollValue(
+                                                noOfPins,
+                                                gameState)) // T6 hold the previous roll value
+                                        .mapT2(moveToNextRollIndex(noOfPins, gameState)))
+                            .map(
+                                gameState ->
+                                    gameState
+                                        .mapT3(shiftNextMultiplierToCurrent(gameState))
+                                        .mapT4(shiftNextNextMultiplierToNextMultiplier(gameState))
+                                        .mapT5(ignore -> MULTIPLYER_IDENTITY))
+```
+
+The state in the functional reactive approach is represented by a registry of 6 tuples:
+
+```
+	T1: Current Score
+	T2: Current roll index (there are a maximum of 21 and during strike some can be skipped)
+	T3: Current bonus multiplier (user to multiply the current NoOfPins)
+	T4: The next multiplier
+	T5: The next next multiplier, e.g., the multiplier after the next
+	T6: Previous noOfPins value
+```

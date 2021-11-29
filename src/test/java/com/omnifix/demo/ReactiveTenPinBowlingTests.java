@@ -19,7 +19,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifierOptions;
 
-class ReactiveTenPinBwlingTests {
+class ReactiveTenPinBowlingTests {
 
   private ReactiveBowling reactiveBowling;
 

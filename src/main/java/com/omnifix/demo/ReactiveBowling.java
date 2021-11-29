@@ -8,7 +8,7 @@ public class ReactiveBowling {
    * Given a stream of noOfPins
    *
    * @param pinsStream
-   * @return A stream of current score
+   * @return A stream of current score (no "X" and "/" allowed)
    */
   public Flux<Integer> play(Flux<Integer> pinsStream) {
     return pinsStream

@@ -80,7 +80,6 @@ public enum GameStateMachine {
   public static GameStateMachine calculateState(GameStateHelper stateProxy) {
     if (stateProxy.getNextFrame() > BowlingConstants.LAST_FRAME + 1) {
       return END_OF_GAME;
-      // throw new IllegalStateException("Game has finished! " + stateProxy);
     } else if (stateProxy.getNextFrame()
         == BowlingConstants.LAST_FRAME + 1) { // +1 models the bonus frame
       if ((stateProxy.isSpareBonus() || isStrikeBonus(stateProxy))
