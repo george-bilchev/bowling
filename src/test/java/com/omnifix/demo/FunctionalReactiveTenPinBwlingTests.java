@@ -35,34 +35,12 @@ class FunctionalReactiveTenPinBwlingTests {
 
   @ParameterizedTest(name = "{0}")
   @MethodSource("provideParameters")
-  void multipleScenariosTests(String scenarioName, List<Integer> pins, Integer score) {
-
-    Flux<Integer> pinsStream = Flux.fromIterable(pins);
-
-    assertThat(reactiveBowling.play(pinsStream).blockLast())
-        .isEqualTo(score); // Expected score sequence
-  }
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("provideParameters")
   void standalneScenariosTests(String scenarioName, List<Integer> pins, Integer score) {
 
     Flux<Integer> pinsStream = Flux.fromIterable(pins);
 
     assertThat(standaloneReactiveBowling.play(pinsStream).blockLast().getT1())
         .isEqualTo(score); // Expected score sequence
-  }
-
-  private static Stream<Arguments> provideParametersX() {
-    return Stream.of(
-        //        Arguments.of(
-        //            "Alternate STRIKES start with frame",
-        //            List.of(1, 2, 10, 1, 2, 10, 1, 2, 10, 1, 2, 10, 1, 2, 10, 1, 2),
-        //            80)
-        Arguments.of(
-            "Max score - ALL STRIKES",
-            List.of(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10),
-            300));
   }
 
   private static Stream<Arguments> provideParameters() {
